@@ -16,15 +16,26 @@ if [ "$1" = "update" ]; then
     if git pull | grep -q "Already up to date." ; then
       echo " up to date."
     else 
-      less PKGBUILD
-      read -p ":: Proceed with installation? [Y/n] " choice
+      if [$name = "aurmgr"]; then
+        less changelog
+        read -p ":: Proceed with installation? [Y/n] " choice
         if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-          makepkg -sirc
-          git clean -dfx
+          . install.sh
         elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
           cd $DIR
           return
         fi
+      else 
+        less PKGBUILD
+        read -p ":: Proceed with installation? [Y/n] " choice
+          if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
+            makepkg -sirc
+            git clean -dfx
+          elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
+            cd $DIR
+            return
+          fi
+      fi
     fi
   }
 
