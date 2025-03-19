@@ -6,6 +6,7 @@
 # it to store AUR sources.
 #
 #
+set -x
 
 DIR=$PWD
 
@@ -81,3 +82,5 @@ elif [ "$1" = "install" ]; then
     return
   fi
 fi
+
+set +x
