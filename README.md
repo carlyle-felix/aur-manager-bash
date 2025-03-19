@@ -10,11 +10,13 @@ git clone https://github.com/carlyle-felix/aurmgr.git
 cd aurmgr
 chmod +x aurmgr.sh
 sudo cp aurmgr.sh /usr/local/bin/aurmgr
-cd aurmanager
-chmod +x aur-update.sh
-chmod +x aur-install.sh
-sudo cp aur-update.sh /usr/local/bin/aurmanager/aur-update
-sudo cp aur-install.sh /usr/local/bin/aurmanager/aur-install
+```
+## INSTALL.SH
+***
+this script automates the steps in the manual installation, user password is
+requested for the copying in final command.
+```
+curl -LSs ""
 ```
 
 ## USAGE
