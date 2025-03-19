@@ -17,7 +17,6 @@ if [ "$1" = "update" ]; then
   
     if git pull | grep -q "Already up to date." ; then
       echo " up to date."
-      
     else
 
       # Since aurmgr is not an AUR package, it must be updated seperately.
@@ -54,7 +53,9 @@ if [ "$1" = "update" ]; then
     (cd "$path" && echo "-> $name" && check)
   done
 
+# Install new packages.
 elif [ "$1" = "install" ]; then
+
   # Check if .build exists, create it if not.
   if [ ! -d $build ]; then
     echo "Creating .build"
@@ -81,6 +82,16 @@ elif [ "$1" = "install" ]; then
     cd $DIR
     return
   fi
+
+#elif [ "$1" = "clean"]; then 
+
+  # lines of code that checks list of folders againsts list of installed
+  # packages retrieved from pacman, if a folder name doesn't exist as a package
+  # delete the folder.
+  #
+  # First make sure all folders names are the same as the installed package, it
+  # seems really unlikely.
+  #
 fi
 
 set +x
