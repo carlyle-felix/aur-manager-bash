@@ -5,6 +5,7 @@
 # This tool will create the directory ~/.build if its not present and will use
 # it to store AUR sources.
 #
+#
 
 DIR=$PWD
 
