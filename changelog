@@ -2,3 +2,4 @@
 
     - let aurmgr to update itself (even though it is not an AUR package) without using the install script
     - add changelog
+    - use debugging (set -x)
