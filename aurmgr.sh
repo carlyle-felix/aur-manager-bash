@@ -16,7 +16,7 @@ if [ "$1" = "update" ]; then
     if git pull | grep -q "Already up to date." ; then
       echo " up to date."
     else 
-      if [$name = "aurmgr"]; then
+      if [ $name = "aurmgr" ]; then
         less changelog
         read -p ":: Proceed with installation? [Y/n] " choice
         if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
