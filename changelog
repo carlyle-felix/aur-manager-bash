@@ -1,5 +1,5 @@
 19-03-25:
 
-    - let aurmgr to update itself (even though it is not an AUR package) without using the install script
+    - let aurmgr update itself (even though it is not an AUR package) without using the install script
     - add changelog
     - use debugging (set -x)
