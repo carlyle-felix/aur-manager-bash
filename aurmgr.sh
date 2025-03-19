@@ -11,12 +11,15 @@ DIR=$PWD
 
 if [ "$1" = "update" ]; then 
   
-  # Check for updates and install
+  # Check for updates and install.
   check() {
   
     if git pull | grep -q "Already up to date." ; then
       echo " up to date."
-    else 
+      
+    else
+
+      # Since aurmgr is not an AUR package, it must be updated seperately.
       if [ $name = "aurmgr" ]; then
         less changelog
         read -p ":: Proceed with installation? [Y/n] " choice
@@ -27,6 +30,8 @@ if [ "$1" = "update" ]; then
           cd $DIR
           return
         fi
+
+      # Update AUR packages.
       else 
         less PKGBUILD
         read -p ":: Proceed with installation? [Y/n] " choice
@@ -41,7 +46,7 @@ if [ "$1" = "update" ]; then
     fi
   }
 
-  # Traverse folders and call check()
+  # Traverse folders and call check().
   for path in ~/.build/*/ ; do
     name=${path::-1}
     name=${name##*/}
@@ -65,7 +70,7 @@ elif [ "$1" = "install" ]; then
   name=${name::-4}
   cd $name
 
-  # Display PKGBUILD and install 
+  # Display PKGBUILD and install.
   less PKGBUILD
   read -p ":: Proceed with installation? [Y/n] " choice
   if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
