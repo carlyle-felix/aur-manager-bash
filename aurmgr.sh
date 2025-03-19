@@ -21,7 +21,8 @@ if [ "$1" = "update" ]; then
         less changelog
         read -p ":: Proceed with installation? [Y/n] " choice
         if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-          . install.sh
+          chmod +x aurmgr.sh
+          sudo cp aurmgr.sh /usr/local/bin/aurmgr
         elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
           cd $DIR
           return
