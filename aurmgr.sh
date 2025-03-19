@@ -80,7 +80,6 @@ elif [ "$1" = "install" ]; then
     git clean -dfx
   elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
     cd $DIR
-    return
   fi
 
 #elif [ "$1" = "clean"]; then 
