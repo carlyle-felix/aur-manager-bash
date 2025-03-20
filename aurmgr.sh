@@ -7,7 +7,6 @@
 #
 #
 set -x
-
 DIR=$PWD
 
 # Give user option to view the PKGBUILD/script.
@@ -105,5 +104,4 @@ elif [ "$1" = "install" ]; then
   # seems really unlikely.
   #
 fi
-
 set +x
