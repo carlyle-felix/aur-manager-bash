@@ -12,7 +12,7 @@ DIR=$PWD
 # Give user option to view the PKGBUILD/script.
 less_prompt() {
 
-read -p ":: View script in less? [Y/n] " less
+read -p ":: View script in less? [Y/n] " choice
   if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
     less "$script"
   elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
@@ -91,6 +91,7 @@ elif [ "$1" = "install" ]; then
   cd $name
 
   # Display PKGBUILD and install.
+  script="PKGBUILD"
   less_prompt
   install_prompt
 
