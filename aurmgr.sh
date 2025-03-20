@@ -2,7 +2,7 @@
 #
 # Simple AUR helper script that maintains the manual installation experience.
 #
-# This tool will create the directory ~/.build if its not present and will use
+# This tool will create the directory ~/.aur if its not present and will use
 # it to store AUR sources.
 #
 #
@@ -65,7 +65,7 @@ if [ "$1" = "update" ]; then
   }
 
   # Traverse folders and call check().
-  for path in ~/.build/*/ ; do
+  for path in ~/.aur/*/ ; do
     name=${path::-1}
     name=${name##*/}
     (cd "$path" && echo "-> $name" && check)
@@ -74,15 +74,15 @@ if [ "$1" = "update" ]; then
 # Install new packages.
 elif [ "$1" = "install" ]; then
 
-  # Check if .build exists, create it if not.
-  if [ ! -d ~/.build ]; then
-    echo "Creating .build"
-    mkdir ~/.build
+  # Check if .aur exists, create it if not.
+  if [ ! -d ~/.aur ]; then
+    echo "Creating ~/.aur directory..."
+    mkdir ~/.aur
   fi
 
-  # Clone the source into .build.
+  # Clone the source into .aur.
   read -p ":: Enter package git clone URL: " url
-  cd ~/.build
+  cd ~/.aur
   git clone $url
 
   # cd into new folder.
