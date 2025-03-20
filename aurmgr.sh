@@ -6,7 +6,7 @@
 # it to store AUR sources.
 #
 #
-set -x
+
 DIR=$PWD
 
 # Give user option to view the PKGBUILD/script.
@@ -105,5 +105,3 @@ elif [ "$1" = "install" ]; then
   #
 
 fi
-
-set +x
