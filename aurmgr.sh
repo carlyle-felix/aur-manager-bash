@@ -35,13 +35,13 @@ if [ "$1" = "update" ]; then
       else 
         less PKGBUILD
         read -p ":: Proceed with installation? [Y/n] " choice
-          if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-            makepkg -sirc
-            git clean -dfx
-          elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
-            cd $DIR
-            return
-          fi
+        if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
+          makepkg -sirc
+          git clean -dfx
+        elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
+          cd $DIR
+          return
+        fi
       fi
     fi
   }
