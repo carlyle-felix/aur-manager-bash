@@ -1,9 +1,0 @@
-19-03-25:
-
-    - let aurmgr update itself (even though it is not an AUR package) without using the install script
-    - add changelog
-    - use debugging (set -x)
-
-20-03-25:
-
-    -fix indentation

@@ -21,7 +21,7 @@ if [ "$1" = "update" ]; then
 
       # Since aurmgr is not an AUR package, it must be updated seperately.
       if [ $name = "aurmgr" ]; then
-        less changelog
+        less aurmgr.sh
         read -p ":: Proceed with installation? [Y/n] " choice
         if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
           chmod +x aurmgr.sh
