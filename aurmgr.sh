@@ -75,7 +75,7 @@ if [ "$1" = "update" ]; then
 elif [ "$1" = "install" ]; then
 
   # Check if .build exists, create it if not.
-  if [ ! -d $build ]; then
+  if [ ! -d ~/.build ]; then
     echo "Creating .build"
     mkdir ~/.build
   fi
