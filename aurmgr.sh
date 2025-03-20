@@ -14,7 +14,7 @@ less_prompt() {
 
 read -p ":: View script in less? [Y/n] " less
   if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-    less $script
+    less "$script"
   elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
     cd $DIR
     return
