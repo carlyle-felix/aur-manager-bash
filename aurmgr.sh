@@ -95,8 +95,7 @@ elif [ "$1" = "install" ]; then
   less_prompt
   install_prompt
 
-#elif [ "$1" = "clean"]; then 
-
+  #elif [ "$1" = "clean"]; then 
   # lines of code that checks list of folders againsts list of installed
   # packages retrieved from pacman, if a folder name doesn't exist as a package
   # delete the folder.
@@ -104,6 +103,7 @@ elif [ "$1" = "install" ]; then
   # First make sure all folders names are the same as the installed package, it
   # seems really unlikely.
   #
+
 fi
 
 set +x
