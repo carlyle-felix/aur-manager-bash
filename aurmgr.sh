@@ -10,39 +10,58 @@ set -x
 
 DIR=$PWD
 
+# Give user option to view the PKGBUILD/script.
+less_prompt() {
+
+read -p ":: View script in less? [Y/n] " less
+  if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
+    less $script
+  elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
+    cd $DIR
+    return
+  fi
+}
+
+# Evaluate which method to use for installation.
+method() {
+
+  if [ $name = "aurmgr" ]; then
+    chmod +x aurmgr.sh
+    sudo cp aurmgr.sh /usr/local/bin/aurmgr
+  else  
+    makepkg -sirc
+    git clean -dfx
+  fi
+}
+
+# Prompt user to install or reject.
+install_prompt() {
+
+  read -p ":: Proceed with installation? [Y/n] " choice
+    if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
+      method
+    elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
+      cd $DIR
+      return
+    fi
+}
+
 if [ "$1" = "update" ]; then 
-  
+
   # Check for updates and install.
   check() {
   
     if git pull | grep -q "Already up to date." ; then
       echo " up to date."
     else
-
-      # Since aurmgr is not an AUR package, it must be updated seperately.
-      if [ $name = "aurmgr" ]; then
-        less aurmgr.sh
-        read -p ":: Proceed with installation? [Y/n] " choice
-        if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-          chmod +x aurmgr.sh
-          sudo cp aurmgr.sh /usr/local/bin/aurmgr
-        elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
-          cd $DIR
-          return
-        fi
-
-      # Update AUR packages.
-      else 
-        less PKGBUILD
-        read -p ":: Proceed with installation? [Y/n] " choice
-        if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-          makepkg -sirc
-          git clean -dfx
-        elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
-          cd $DIR
-          return
-        fi
+      if [ $name = "aurmgr" ]; then   # Since aurmgr is not an AUR package, it must be updated seperately.
+        script="aurmgr.sh"
+      else                            # Update AUR packages.
+        script="PKGBUILD"
       fi
+      echo ":: An update is available for $name..."
+      less_prompt
+      install_prompt
     fi
   }
 
@@ -73,14 +92,8 @@ elif [ "$1" = "install" ]; then
   cd $name
 
   # Display PKGBUILD and install.
-  less PKGBUILD
-  read -p ":: Proceed with installation? [Y/n] " choice
-  if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-    makepkg -sirc
-    git clean -dfx
-  elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
-    cd $DIR
-  fi
+  less_prompt
+  install_prompt
 
 #elif [ "$1" = "clean"]; then 
 
