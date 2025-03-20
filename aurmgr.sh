@@ -77,12 +77,12 @@ elif [ "$1" = "install" ]; then
   # Check if .build exists, create it if not.
   if [ ! -d $build ]; then
     echo "Creating .build"
-    mkdir $build
+    mkdir ~/.build
   fi
 
   # Clone the source into .build.
   read -p ":: Enter package git clone URL: " url
-  cd $build
+  cd ~/.build
   git clone $url
 
   # cd into new folder.
