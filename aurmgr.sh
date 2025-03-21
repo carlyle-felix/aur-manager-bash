@@ -25,11 +25,9 @@ read -p ":: View script in less? [Y/n] " choice
 method() {
 
   if [ $name = "aurmgr" ]; then
-    chmod +x aurmgr.sh
-    sudo cp -p aurmgr.sh /usr/local/bin/aurmgr
+    chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr
   else  
-    makepkg -sirc
-    git clean -dfx
+    makepkg -sirc && git clean -dfx
   fi
 }
 
@@ -59,8 +57,7 @@ if [ "$1" = "update" ]; then
         script="PKGBUILD"
       fi
       echo ":: An update is available for $name..."
-      less_prompt
-      install_prompt
+      less_prompt && install_prompt
     fi
   }
 
@@ -68,7 +65,7 @@ if [ "$1" = "update" ]; then
   for path in ~/.aur/*/ ; do
     name=${path::-1}
     name=${name##*/}
-    (cd "$path" && echo "-> $name" && check)
+    cd "$path" && echo "-> $name" && check
   done
 
 # Install new packages.
@@ -82,8 +79,7 @@ elif [ "$1" = "install" ]; then
 
   # Clone the source into .aur.
   read -p ":: Enter package git clone URL: " url
-  cd ~/.aur
-  git clone $url
+  cd ~/.aur && git clone $url
 
   # cd into new folder.
   name=${url##*/}
@@ -92,6 +88,5 @@ elif [ "$1" = "install" ]; then
 
   # Display PKGBUILD and install.
   script="PKGBUILD"
-  less_prompt
-  install_prompt
+  less_prompt && install_prompt
 fi
