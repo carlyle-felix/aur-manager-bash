@@ -25,7 +25,7 @@ method() {
 
   if [ $name = "aurmgr" ]; then
     echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
-    chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr
+    chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr && exec "$0"
   else  
     makepkg -sirc && git clean -dfx
   fi
