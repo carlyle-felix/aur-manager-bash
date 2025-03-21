@@ -5,7 +5,7 @@
 # This tool will create the directory ~/.aur if its not present and will use
 # it to store AUR sources.
 #
-set -x
+
 dir=$PWD
 aur_dir=~/".aur"
 
@@ -167,5 +167,3 @@ elif [ "$1" = "clean" ]; then
 
   cd "$dir"   # In case script is run outside of /usr/local/bin
 fi
-
-set +x
