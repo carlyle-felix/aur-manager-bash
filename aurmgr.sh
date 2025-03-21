@@ -52,7 +52,6 @@ main() {
     cd "$dir"
 
   elif [ "$1" = "clean" ]; then # Delete directories of packages no longer installed
-
     
     echo ":: ELEVATED PRIVILEGE REQUIRED TO RETRIEVE INSTALLED LIST FROM PACMAN..."
     installed=( $(sudo pacman -Qm | cut -f 1 -d " ") )  # Retrieve list of installed AUR packages from pacman and store in an array
