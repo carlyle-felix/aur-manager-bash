@@ -47,7 +47,7 @@ backup() {
   if [ "$1" = "store" ]; then
     cp -r "$origin_dir" "$backup_dir"
   elif [ "$1" = "retrieve" ]; then
-    mv "$backup_dir" "$origin_dir"
+    rm -rf "$origin_dir" && mv "$backup_dir" "$aur_dir"
   elif [ "$1" = "discard" ]; then
     rm -rf "$backup_dir"
   fi
