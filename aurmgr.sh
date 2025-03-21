@@ -6,11 +6,12 @@
 # it to store AUR sources.
 #
 
-dir=$PWD
-aur_dir=~/".aur"
 args="$@"
 
 main() {
+
+  dir=$PWD
+  aur_dir=~/".aur"
 
   if [ "$1" = "update" ]; then 
 
@@ -76,7 +77,7 @@ main() {
       done
 
       if [ "$match" = false ]; then
-        echo ":: Package \"$name\" not installed, removing..."
+        echo " Package \"$name\" not installed, removing..."
         rm -rf "$aur_dir"/"$name"
         ntd=false
       fi
@@ -135,7 +136,7 @@ method() {
   if [ $name = "aurmgr" ]; then
     echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
     chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr && backup discard
-    echo ":: Restarting aurmgr script..."
+    echo " Restarting aurmgr script..."
     exec "$0" "$args"
   else  
     makepkg -sirc 
