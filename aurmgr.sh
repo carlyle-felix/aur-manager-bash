@@ -35,7 +35,11 @@ backup() {
   fi
 
   if [ "$1" = "store" ]; then
-    cp -r "$origin_dir" "$backup_dir"
+    if [ ! -d "$backup_dir" ]; then
+      cp -r "$origin_dir" "$backup_dir"
+    else  
+      echo " Backup for "$name" already exists."
+    fi
   elif [ "$1" = "retrieve" ]; then
     rm -rf "$origin_dir" && mv "$backup_dir" "$aur_dir"
   elif [ "$1" = "discard" ]; then
@@ -48,11 +52,17 @@ method() {
 
   if [ $name = "aurmgr" ]; then
     echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
-    chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr
+    chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr && backup discard
     echo ":: Restarting aurmgr script..."
     exec "$0" "$args"
   else  
-    makepkg -sirc && git clean -dfx
+    makepkg -sirc 
+    # check exit code of makepkg, only discard backup if it fails.
+    if [ "$?" = 0]; then
+      backup discard && git clean -dfx
+    else  
+      backup retrieve
+    fi
   fi
 }
 
@@ -61,7 +71,7 @@ install_prompt() {
 
   read -p ":: Proceed with installation? [Y/n] " choice
     if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-      backup discard && method
+      method
     elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
       backup retrieve
     fi
