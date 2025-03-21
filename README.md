@@ -23,6 +23,8 @@ curl -LSs "https://raw.githubusercontent.com/carlyle-felix/aurmgr/refs/heads/mai
 ***
 
 
-`aurmgr update`
+`aurmgr update` updates packages found in ~/.aur.
 
-`aurmgr install` or `aurmgr install [AUR package git clone URL]`
+`aurmgr install` or `aurmgr install [AUR package git clone URL]` clones package to ~/.aur and installs.
+
+`aurmgr clean` deletes directories in ~/.aur if they're not found in `pacman -Qm`

@@ -93,4 +93,26 @@ elif [ "$1" = "install" ]; then
   # Display PKGBUILD and install.
   script="PKGBUILD"
   less_prompt && install_prompt
+
+elif [ "$1" = "clean" ]; then
+
+  installed=( $(sudo pacman -Qm | cut -f 1 -d " ") )
+
+  for path in ~/.aur/*/ ; do
+    name=${path::-1}
+    name=${name##*/}
+    match=false
+    if [ "$name" = "aurmgr" ]; then
+        continue
+    fi
+    for package in ${installed[@]}; do
+        if [ "$name" = "$package" ]; then
+            match=true
+        fi
+    done
+    if [ "$match" = false ]; then
+        echo ":: Package \"$name\" not installed, removing..."
+        rm -rf ~/.aur/"$name"
+    fi
+  done
 fi
