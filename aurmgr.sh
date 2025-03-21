@@ -10,10 +10,90 @@ dir=$PWD
 aur_dir=~/".aur"
 args="$@"
 
+main() {
+
+  if [ "$1" = "update" ]; then 
+
+    # Traverse folders and call check().
+    for path in "$aur_dir"/*/ ; do
+      name=${path::-1}
+      name=${name##*/}
+
+      if [ "$name" = ".backup" ]; then
+        continue
+      else
+        backup store && cd "$path" && echo "-> $name" && check
+      fi
+    done
+  
+    cd "$dir"
+
+  elif [ "$1" = "install" ]; then
+
+    if [ ! -d ~/.aur ]; then
+      echo "Creating "$aur_dir" directory..."
+      mkdir "$aur_dir"
+    fi
+
+    if [ -n "$2" ]; then
+      url="$2"
+    else
+      read -p ":: Enter package git clone URL: " url
+    fi  
+    cd ~/.aur && git clone $url
+
+    name=${url##*/}
+    name=${name::-4}
+    cd $name
+    script="PKGBUILD"
+    less_prompt && install_prompt
+    
+    cd "$dir"
+
+  elif [ "$1" = "clean" ]; then # Delete directories of packages no longer installed
+
+    
+    echo ":: ELEVATED PRIVILEGE REQUIRED TO RETRIEVE INSTALLED LIST FROM PACMAN..."
+    installed=( $(sudo pacman -Qm | cut -f 1 -d " ") )  # Retrieve list of installed AUR packages from pacman and store in an array
+
+    ntd=true
+
+    for path in "$aur_dir"/*/ ; do
+      name=${path::-1}
+      name=${name##*/}
+      
+      match=false
+
+      # Ignore the aurmgr folder since it won't be on the list.
+      if [ "$name" = "aurmgr" ] || [ "$name" = ".backup" ]; then
+          continue
+      fi
+
+      for package in ${installed[@]}; do
+        if [ "$name" = "$package" ]; then
+            match=true
+        fi
+      done
+
+      if [ "$match" = false ]; then
+        echo ":: Package \"$name\" not installed, removing..."
+        rm -rf "$aur_dir"/"$name"
+        ntd=false
+      fi
+    done
+    
+    if [ "$ntd" = true ]; then
+        echo " Nothing to do."
+    fi
+
+    cd "$dir"
+  fi
+}
+
 # Give user option to view the PKGBUILD/script.
 less_prompt() {
 
-read -p ":: View script in less? [Y/n] " choice
+  read -p ":: View script in less? [Y/n] " choice
   if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
     less "$script"
   elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
@@ -27,7 +107,7 @@ read -p ":: View script in less? [Y/n] " choice
 # folder with the stored folder in order to prompt the user to update it during the next update.
 backup() {
 
-  backup_dir=~/".aur/.backup/$name"
+  backup_dir="$aur_dir/.backup/$name"
   origin_dir="$aur_dir/$name"
 
   if [ ! -d ~/.aur/.backup ]; then
@@ -43,7 +123,9 @@ backup() {
   elif [ "$1" = "retrieve" ]; then
     rm -rf "$origin_dir" && mv "$backup_dir" "$aur_dir"
   elif [ "$1" = "discard" ]; then
-    rm -rf "$backup_dir"
+    if [ -d "$backup_dir" ]; then
+      rm -rf "$backup_dir"
+    fi
   fi
 } 
 
@@ -57,12 +139,15 @@ method() {
     exec "$0" "$args"
   else  
     makepkg -sirc 
-    # check exit code of makepkg, only discard backup if it fails.
-    if [ "$?" = 0]; then
-      backup discard && git clean -dfx
-    else  
-      backup retrieve
+    if [ "$args" = "update" ]; then
+      if [ "$?" = 0 ]; then
+        backup discard
+      else  
+        backup retrieve
+        return
+      fi
     fi
+    git clean -dfx
   fi
 }
 
@@ -74,109 +159,26 @@ install_prompt() {
       method
     elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
       backup retrieve
+    else  
+      install_prompt
     fi
 }
 
-if [ "$1" = "update" ]; then 
+# Check for updates and install.
+check() {
 
-  # Check for updates and install.
-  check() {
-  
-    if git pull | grep -q "Already up to date." ; then
-      echo " up to date."
-      backup discard
-    else
-      if [ $name = "aurmgr" ]; then   # Since aurmgr is not an AUR package, it must be updated seperately.
-        script="aurmgr.sh"
-      else                            # Update AUR packages.
-        script="PKGBUILD"
-      fi
-      echo ":: An update is available for $name..."
-      less_prompt && install_prompt
-    fi
-  }
-
-  # Traverse folders and call check().
-  for path in "$aur_dir"/*/ ; do
-    name=${path::-1}
-    name=${name##*/}
-
-    if [ "$name" = ".backup" ]; then
-      continue
-    else
-      backup store && cd "$path" && echo "-> $name" && check
-    fi
-  done
-
-  cd "$dir"   # In case script is run outside of /usr/local/bin
-
-# Install new packages.
-elif [ "$1" = "install" ]; then
-
-  # Check if .aur exists, create it if not.
-  if [ ! -d ~/.aur ]; then
-    echo "Creating "$aur_dir" directory..."
-    mkdir "$aur_dir"
-  fi
-
-  # Clone the source into .aur.
-  if [ -n "$2" ]; then
-    url="$2"
+  if git pull | grep -q "Already up to date." ; then
+    echo " up to date."
+    backup discard
   else
-    read -p ":: Enter package git clone URL: " url
-  fi  
-  cd ~/.aur && git clone $url
-
-  # cd into new folder.
-  name=${url##*/}
-  name=${name::-4}
-  cd $name
-
-  # Display PKGBUILD and install.
-  script="PKGBUILD"
-  less_prompt && install_prompt
-
-  cd "$dir"   # In case script is run outside of /usr/local/bin
-
-# Delete directories of packages no longer installed
-elif [ "$1" = "clean" ]; then
-
-  # Retrieve list of installed AUR packages from pacman and store in an array
-  echo ":: ELEVATED PRIVILEGE REQUIRED TO RETRIEVE INSTALLED LIST FROM PACMAN..."
-  installed=( $(sudo pacman -Qm | cut -f 1 -d " ") )
-
-  ntd=true
-
-  # Traverse folders
-  for path in "$aur_dir"/*/ ; do
-    name=${path::-1}
-    name=${name##*/}
-    
-    match=false
-
-    # Ignore the aurmgr folder
-    if [ "$name" = "aurmgr" ] || [ "$name" = ".backup" ]; then
-        continue
+    if [ $name = "aurmgr" ]; then   # Since aurmgr is not an AUR package, it must be updated seperately.
+      script="aurmgr.sh"
+    else
+      script="PKGBUILD"
     fi
-
-    # Find a match for folder name in the array
-    for package in ${installed[@]}; do
-      if [ "$name" = "$package" ]; then
-          match=true
-      fi
-    done
-
-    # If a match is not found, delete the folder
-    if [ "$match" = false ]; then
-      echo ":: Package \"$name\" not installed, removing..."
-      rm -rf "$aur_dir"/"$name"
-      ntd=false
-    fi
-  done
-  
-  if [ "$ntd" = true ]; then
-      echo " Nothing to do."
+    echo ":: An update is available for $name..."
+    less_prompt && install_prompt
   fi
+}
 
-  cd "$dir"   # In case script is run outside of /usr/local/bin
-fi
+main "$@"
