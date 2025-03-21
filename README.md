@@ -24,4 +24,5 @@ curl -LSs "https://raw.githubusercontent.com/carlyle-felix/aurmgr/refs/heads/mai
 
 
 `aurmgr update`
-`aurmgr install` or `aurmgr install _[AUR package git clone URL]_`
+
+`aurmgr install` or `aurmgr install [AUR package git clone URL]`
