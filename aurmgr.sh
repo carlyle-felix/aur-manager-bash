@@ -167,4 +167,5 @@ elif [ "$1" = "clean" ]; then
 
   cd "$dir"   # In case script is run outside of /usr/local/bin
 fi
+
 set +x
