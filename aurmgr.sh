@@ -27,7 +27,7 @@ method() {
 
   if [ $name = "aurmgr" ]; then
     echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
-    chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr && exec "$0"
+    chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr && backup discard &&exec "$0"
   else  
     makepkg -sirc && git clean -dfx
   fi
@@ -58,7 +58,7 @@ install_prompt() {
 
   read -p ":: Proceed with installation? [Y/n] " choice
     if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-      method && backup discard
+      method
     elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
       backup retrieve
     fi
