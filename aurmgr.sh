@@ -5,7 +5,7 @@
 # This tool will create the directory ~/.aur if its not present and will use
 # it to store AUR sources.
 #
-
+set -x
 dir=$PWD
 aur_dir=~/".aur"
 
@@ -19,17 +19,6 @@ read -p ":: View script in less? [Y/n] " choice
     return
   else 
     less_prompt
-  fi
-}
-
-# Evaluate which method to use for installation.
-method() {
-
-  if [ $name = "aurmgr" ]; then
-    echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
-    chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr && backup discard &&exec "$0"
-  else  
-    makepkg -sirc && git clean -dfx
   fi
 }
 
@@ -52,6 +41,17 @@ backup() {
     rm -rf "$backup_dir"
   fi
 } 
+
+# Evaluate which method to use for installation.
+method() {
+
+  if [ $name = "aurmgr" ]; then
+    echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
+    chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr && exec "$0"
+  else  
+    makepkg -sirc && git clean -dfx
+  fi
+}
 
 # Prompt user to install or reject.
 install_prompt() {
@@ -167,3 +167,4 @@ elif [ "$1" = "clean" ]; then
 
   cd "$dir"   # In case script is run outside of /usr/local/bin
 fi
+set +x
