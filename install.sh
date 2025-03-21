@@ -7,11 +7,8 @@
 git clone https://github.com/carlyle-felix/aurmgr.git ~/.build/aurmgr
 cd ~/.build/aurmgr
 
-echo "Making aurmgr executable"
-chmod +x aurmgr.sh
-
-echo "Copying aurmgr to /usr/local/bin/"
-sudo cp -p aurmgr.sh /usr/local/bin/aurmgr
+echo "Making aurmgr executable and copying aurmgr to /usr/local/bin/"
+chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr
 
 echo "done."
 cd
