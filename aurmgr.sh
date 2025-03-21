@@ -5,7 +5,6 @@
 # This tool will create the directory ~/.aur if its not present and will use
 # it to store AUR sources.
 #
-#
 
 DIR=$PWD
 
@@ -25,6 +24,7 @@ read -p ":: View script in less? [Y/n] " choice
 method() {
 
   if [ $name = "aurmgr" ]; then
+    echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
     chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr
   else  
     makepkg -sirc && git clean -dfx
@@ -94,25 +94,43 @@ elif [ "$1" = "install" ]; then
   script="PKGBUILD"
   less_prompt && install_prompt
 
+# Delete directories of packages no longer installed
 elif [ "$1" = "clean" ]; then
 
+  # Retrieve list of installed AUR packages from pacman and store in an array
+  echo ":: ELEVATED PRIVILEGE REQUIRED TO RETRIEVE INSTALLED LIST FROM PACMAN..."
   installed=( $(sudo pacman -Qm | cut -f 1 -d " ") )
 
+  ntd=true
+
+  # Traverse folders
   for path in ~/.aur/*/ ; do
     name=${path::-1}
     name=${name##*/}
+    
     match=false
+
+    # Ignore the aurmgr folder
     if [ "$name" = "aurmgr" ]; then
         continue
     fi
+
+    # Find a match for folder name in the array
     for package in ${installed[@]}; do
-        if [ "$name" = "$package" ]; then
-            match=true
-        fi
+      if [ "$name" = "$package" ]; then
+          match=true
+      fi
     done
+
+    # If a match is not found, delete the folder
     if [ "$match" = false ]; then
-        echo ":: Package \"$name\" not installed, removing..."
-        rm -rf ~/.aur/"$name"
+      echo ":: Package \"$name\" not installed, removing..."
+      rm -rf ~/.aur/"$name"
+      ntd=false
     fi
   done
+  
+  if [ "$ntd" = true ]; then
+      echo " Nothing to do."
+    fi
 fi
