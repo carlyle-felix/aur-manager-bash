@@ -6,7 +6,7 @@
 # it to store AUR sources.
 #
 
-DIR=$PWD
+dir=$PWD
 
 # Give user option to view the PKGBUILD/script.
 less_prompt() {
@@ -15,7 +15,6 @@ read -p ":: View script in less? [Y/n] " choice
   if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
     less "$script"
   elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
-    cd $DIR
     return
   fi
 }
@@ -38,7 +37,7 @@ install_prompt() {
     if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
       method
     elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
-      cd $DIR
+      cd "$dir"
       return
     fi
 }
