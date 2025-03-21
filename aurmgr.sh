@@ -15,7 +15,7 @@ less_prompt() {
 read -p ":: View script in less? [Y/n] " choice
   if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
     less "$script"
-  elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
+  elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
     cd $DIR
     return
   fi
@@ -37,7 +37,7 @@ install_prompt() {
   read -p ":: Proceed with installation? [Y/n] " choice
     if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
       method
-    elif [ "$choice" = "n" ] || [ "$choice" = "n" ]; then
+    elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
       cd $DIR
       return
     fi
