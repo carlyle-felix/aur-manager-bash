@@ -58,7 +58,7 @@ install_prompt() {
 
   read -p ":: Proceed with installation? [Y/n] " choice
     if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-      method && backup discard
+      backup discard && method
     elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
       backup retrieve
     fi
