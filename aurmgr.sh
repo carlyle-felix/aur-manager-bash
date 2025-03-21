@@ -8,6 +8,7 @@
 
 dir=$PWD
 aur_dir=~/".aur"
+args="$@"
 
 # Give user option to view the PKGBUILD/script.
 less_prompt() {
@@ -49,7 +50,7 @@ method() {
     echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
     chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr
     echo ":: Restarting aurmgr script..."
-    exec "$0" "$@"
+    exec "$0" "$args"
   else  
     makepkg -sirc && git clean -dfx
   fi
