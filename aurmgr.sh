@@ -49,7 +49,7 @@ method() {
     echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
     chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr
     echo ":: Restarting aurmgr script..."
-    exec "$0" "update"
+    exec "$0" "$@"
   else  
     makepkg -sirc && git clean -dfx
   fi
