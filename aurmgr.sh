@@ -78,7 +78,11 @@ elif [ "$1" = "install" ]; then
   fi
 
   # Clone the source into .aur.
-  read -p ":: Enter package git clone URL: " url
+  if [ -n "$2" ]; then
+    url="$2"
+  else
+    read -p ":: Enter package git clone URL: " url
+  fi  
   cd ~/.aur && git clone $url
 
   # cd into new folder.
