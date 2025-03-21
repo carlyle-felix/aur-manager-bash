@@ -26,7 +26,7 @@ method() {
 
   if [ $name = "aurmgr" ]; then
     chmod +x aurmgr.sh
-    sudo cp aurmgr.sh /usr/local/bin/aurmgr
+    sudo cp -p aurmgr.sh /usr/local/bin/aurmgr
   else  
     makepkg -sirc
     git clean -dfx
