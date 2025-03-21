@@ -7,6 +7,7 @@
 #
 
 dir=$PWD
+aur_dir=~/".aur"
 
 # Give user option to view the PKGBUILD/script.
 less_prompt() {
@@ -16,6 +17,8 @@ read -p ":: View script in less? [Y/n] " choice
     less "$script"
   elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
     return
+  else 
+    less_prompt
   fi
 }
 
@@ -30,15 +33,34 @@ method() {
   fi
 }
 
+# Store folder in case user chooses to not update, for whatever reason, then replace the updated
+# folder with the stored folder in order to prompt the user to update it during the next update.
+backup() {
+
+  backup_dir=~/".aur/.backup/$name"
+  origin_dir="$aur_dir/$name"
+
+  if [ ! -d ~/.aur/.backup ]; then
+    mkdir "$dir"
+  fi
+
+  if [ "$1" = "store" ]; then
+    cp -r "$origin_dir" "$backup_dir"
+  elif [ "$1" = "retrieve" ]; then
+    mv "$backup_dir" "$origin_dir"
+  elif [ "$1" = "discard" ]; then
+    rm -rf "$backup_dir"
+  fi
+} 
+
 # Prompt user to install or reject.
 install_prompt() {
 
   read -p ":: Proceed with installation? [Y/n] " choice
     if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
-      method
+      method && backup discard
     elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
-      cd "$dir"
-      return
+      backup retrieve
     fi
 }
 
@@ -49,6 +71,7 @@ if [ "$1" = "update" ]; then
   
     if git pull | grep -q "Already up to date." ; then
       echo " up to date."
+      backup discard
     else
       if [ $name = "aurmgr" ]; then   # Since aurmgr is not an AUR package, it must be updated seperately.
         script="aurmgr.sh"
@@ -61,19 +84,26 @@ if [ "$1" = "update" ]; then
   }
 
   # Traverse folders and call check().
-  for path in ~/.aur/*/ ; do
+  for path in "$aur_dir"/*/ ; do
     name=${path::-1}
     name=${name##*/}
-    cd "$path" && echo "-> $name" && check
+
+    if [ "$name" = ".backup" ]; then
+      continue
+    else
+      backup store && cd "$path" && echo "-> $name" && check
+    fi
   done
+
+  cd "$dir"   # In case script is run outside of /usr/local/bin
 
 # Install new packages.
 elif [ "$1" = "install" ]; then
 
   # Check if .aur exists, create it if not.
   if [ ! -d ~/.aur ]; then
-    echo "Creating ~/.aur directory..."
-    mkdir ~/.aur
+    echo "Creating "$aur_dir" directory..."
+    mkdir "$aur_dir"
   fi
 
   # Clone the source into .aur.
@@ -93,6 +123,8 @@ elif [ "$1" = "install" ]; then
   script="PKGBUILD"
   less_prompt && install_prompt
 
+  cd "$dir"   # In case script is run outside of /usr/local/bin
+
 # Delete directories of packages no longer installed
 elif [ "$1" = "clean" ]; then
 
@@ -103,14 +135,14 @@ elif [ "$1" = "clean" ]; then
   ntd=true
 
   # Traverse folders
-  for path in ~/.aur/*/ ; do
+  for path in "$aur_dir"/*/ ; do
     name=${path::-1}
     name=${name##*/}
     
     match=false
 
     # Ignore the aurmgr folder
-    if [ "$name" = "aurmgr" ]; then
+    if [ "$name" = "aurmgr" ] || [ "$name" = ".backup" ]; then
         continue
     fi
 
@@ -124,12 +156,14 @@ elif [ "$1" = "clean" ]; then
     # If a match is not found, delete the folder
     if [ "$match" = false ]; then
       echo ":: Package \"$name\" not installed, removing..."
-      rm -rf ~/.aur/"$name"
+      rm -rf "$aur_dir"/"$name"
       ntd=false
     fi
   done
   
   if [ "$ntd" = true ]; then
       echo " Nothing to do."
-    fi
+  fi
+
+  cd "$dir"   # In case script is run outside of /usr/local/bin
 fi
