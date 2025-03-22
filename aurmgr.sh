@@ -143,7 +143,7 @@ backup() {
 
 # Evaluate which method to use for installation.
 method() {
-  echo "$PWD"
+
   if [ $name = "aurmgr" ]; then
     echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
     chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr && backup discard
