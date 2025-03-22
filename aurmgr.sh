@@ -5,7 +5,6 @@
 # This tool will create the directory ~/.aur if its not present and will use
 # it to store AUR sources.
 #
-
 args="$@"
 
 main() {
@@ -15,18 +14,31 @@ main() {
 
   if [ "$1" = "update" ]; then 
 
+    updates=false
+    update_list=()
+
     # Traverse folders and call check().
     for path in "$aur_dir"/*/ ; do
       name=${path::-1}
       name=${name##*/}
 
-      if [ "$name" = ".backup" ]; then
+      if [ $name = ".backup" ]; then
         continue
       else
-        backup store && cd "$path" && echo "-> $name" && check
+        backup store && cd "$path" && check
       fi
     done
-  
+
+    if [ $updates = true ]; then
+      echo ":: The following packages has updates..."
+      for package in ${update_list[@]}; do
+      echo " $package"
+      done
+      update
+    else  
+      echo " There's nothing to do."
+    fi
+
     cd "$dir"
 
   elif [ "$1" = "install" ]; then
@@ -65,25 +77,25 @@ main() {
       match=false
 
       # Ignore the aurmgr folder since it won't be on the list.
-      if [ "$name" = "aurmgr" ] || [ "$name" = ".backup" ]; then
+      if [ $name = "aurmgr" ] || [ "$name" = ".backup" ]; then
           continue
       fi
 
       for package in ${installed[@]}; do
-        if [ "$name" = "$package" ]; then
+        if [ $name = $package ]; then
             match=true
         fi
       done
 
-      if [ "$match" = false ]; then
+      if [ $match = false ]; then
         echo " Package \"$name\" not installed, removing..."
         rm -rf "$aur_dir"/"$name"
         ntd=false
       fi
     done
     
-    if [ "$ntd" = true ]; then
-        echo " Nothing to do."
+    if [ $ntd = true ]; then
+        echo " Theres nothing to do."
     fi
 
     cd "$dir"
@@ -93,10 +105,10 @@ main() {
 # Give user option to view the PKGBUILD/script.
 less_prompt() {
 
-  read -p ":: View script in less? [Y/n] " choice
-  if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
+  read -p ":: View $name $script in less? [Y/n] " choice
+  if [ $choice = "y" ] || [ $choice = "Y" ]; then
     less "$script"
-  elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
+  elif [ $choice = "n" ] || [ "$choice" = "N" ]; then
     return
   else 
     less_prompt
@@ -139,7 +151,7 @@ method() {
     exec "$0" "$args"
   else  
     makepkg -sirc 
-    if [ "$args" = "update" ]; then
+    if [ $args = "update" ]; then
       if [ "$?" = 0 ]; then
         backup discard
       else  
@@ -155,9 +167,9 @@ method() {
 install_prompt() {
 
   read -p ":: Proceed with installation? [Y/n] " choice
-    if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then
+    if [ $choice = "y" ] || [ $choice = "Y" ]; then
       method
-    elif [ "$choice" = "n" ] || [ "$choice" = "N" ]; then
+    elif [ $choice = "n" ] || [ $choice = "N" ]; then
       backup retrieve
     else  
       install_prompt
@@ -167,17 +179,30 @@ install_prompt() {
 # Check for updates and install.
 check() {
 
-  if git pull | grep -q "Already up to date." ; then
-    echo " up to date."
+  if git pull | grep -q "test" ; then
     backup discard
   else
-    if [ $name = "aurmgr" ]; then   # Since aurmgr is not an AUR package, it must be updated seperately.
-      script="aurmgr.sh"
-    else
-      script="PKGBUILD"
-    fi
-    echo ":: An update is available for $name..."
-    less_prompt && install_prompt
+    updates=true
+    update_list+=("$name")
+  fi
+}
+
+update() {
+
+  read -p ":: Continue to update? [Y/n] " choice
+  if [ $choice = "y" ] || [ $choice = "Y" ]; then
+    for name in ${update_list[@]}; do
+      if [ $name = "aurmgr" ]; then   # Since aurmgr is not an AUR package, it must be updated seperately.
+        script="aurmgr.sh"
+      else
+        script="PKGBUILD"
+      fi
+      less_prompt && install_prompt
+    done
+  elif [ $choice = "n" ] || [ "$choice" = "N" ]; then
+    backup retrieve
+  else 
+    update
   fi
 }
 
