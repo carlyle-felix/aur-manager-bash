@@ -179,7 +179,7 @@ install_prompt() {
 # Check for updates and install.
 check() {
 
-  if git pull | grep -q "test" ; then
+  if git pull | grep -q "Already up to date." ; then
     backup discard
   else
     updates=true
