@@ -148,7 +148,7 @@ method() {
     echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
     chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr && backup discard
     echo " Restarting aurmgr script..."
-    exec "$0" "$args"
+#    exec "$0" "$args"  # after restarting the script, any other updates found wont be installed
   else  
     makepkg -sirc 
     if [ $args = "update" ]; then
