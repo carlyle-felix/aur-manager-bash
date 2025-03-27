@@ -4,7 +4,7 @@ These scripts automates some of the steps found in the official AUR guide withou
 
 
 ## MANUAL INSTALLATION
-***
+
 ```
 git clone https://github.com/carlyle-felix/aurmgr.git ~/.build/aurmgr
 cd ~/.build/aurmgr
@@ -12,12 +12,16 @@ chmod +x aurmgr.sh
 sudo cp aurmgr.sh /usr/local/bin/aurmgr
 ```
 ## AUTOMATED INSTALL (install.sh)
-***
+
 This script automates the steps in the manual installation, user password is
 requested for the copying in final command.
 ```
 curl -LSs "https://raw.githubusercontent.com/carlyle-felix/aurmgr/refs/heads/main/install.sh" | bash -
 ```
+
+## NO INSTALL
+
+Use `./aurmgr.sh [option]` instead of `aurmgr [option]` in the directory where aurmgr.sh is stored.
 
 ## USAGE
 ***

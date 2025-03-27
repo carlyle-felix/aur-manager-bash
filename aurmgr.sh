@@ -76,8 +76,7 @@ main() {
       
       match=false
 
-      # Ignore the aurmgr folder since it won't be on the list.
-      if [ $name = "aurmgr" ] || [ "$name" = ".backup" ]; then
+      if [ "$name" = ".backup" ]; then
           continue
       fi
 
@@ -105,7 +104,7 @@ main() {
 # Give user option to view the PKGBUILD/script.
 less_prompt() {
 
-  read -p ":: View $name $script in less? [Y/n] " choice
+  read -p ":: View $name $script in less? [y/n] " choice
   if [ $choice = "y" ] || [ $choice = "Y" ]; then
     less "$script"
   elif [ $choice = "n" ] || [ "$choice" = "N" ]; then
@@ -143,30 +142,22 @@ backup() {
 
 # Evaluate which method to use for installation.
 method() {
-
-  if [ $name = "aurmgr" ]; then
-    echo ":: ELEVATED PRIVILEGE REQUIRED TO COPY AURMGR SCRIPT TO /USR/LOCAL/BIN..."
-    chmod +x aurmgr.sh && sudo cp -p aurmgr.sh /usr/local/bin/aurmgr && backup discard
-    echo " Restarting aurmgr script..."
-#    exec "$0" "$args"  # after restarting the script, any other updates found wont be installed
-  else  
-    makepkg -sirc 
-    if [ $args = "update" ]; then
-      if [ "$?" = 0 ]; then
-        backup discard
-      else  
-        backup retrieve
-        return
-      fi
+  makepkg -sirc 
+  if [ $args = "update" ]; then
+    if [ "$?" = 0 ]; then
+      backup discard
+    else  
+      backup retrieve
+      return
     fi
-    git clean -dfx
   fi
+  git clean -dfx
 }
 
 # Prompt user to install or reject.
 install_prompt() {
 
-  read -p ":: Proceed with installation? [Y/n] " choice
+  read -p ":: Proceed with installation? [y/n] " choice
     if [ $choice = "y" ] || [ $choice = "Y" ]; then
       method
     elif [ $choice = "n" ] || [ $choice = "N" ]; then
@@ -179,7 +170,7 @@ install_prompt() {
 # Check for updates and install.
 check() {
 
-  if git pull | grep -q "Already up to date." ; then
+  if git pull | grep -q "test" ; then
     backup discard
   else
     updates=true
@@ -189,14 +180,10 @@ check() {
 
 update() {
 
-  read -p ":: Continue to update? [Y/n] " choice
+  read -p ":: Continue to update? [y/n] " choice
   if [ $choice = "y" ] || [ $choice = "Y" ]; then
     for name in ${update_list[@]}; do
-      if [ $name = "aurmgr" ]; then   # Since aurmgr is not an AUR package, it must be updated seperately.
-        script="aurmgr.sh"
-      else
-        script="PKGBUILD"
-      fi
+      script="PKGBUILD"
       cd "$aur_dir/$name" && less_prompt && install_prompt
     done
   elif [ $choice = "n" ] || [ "$choice" = "N" ]; then
