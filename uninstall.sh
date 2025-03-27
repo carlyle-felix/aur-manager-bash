@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo ":: Uninstalling aurmgr..."
+echo ":: Uninstalling aurb..."
 
-echo ":: ELEVATED PRIVILEGE REQUIRED TO DELETE AURMGR FROM /USR/LOCAL/BIN..."
-sudo rm /usr/local/bin/aurmgr && rm -rf ~/.aur/aurmgr
+echo ":: ELEVATED PRIVILEGE REQUIRED TO DELETE AURB FROM /USR/LOCAL/BIN..."
+sudo rm /usr/local/bin/aurb && rm -rf ~/.aur/aurb
 
 read -p ":: Remove .aur directory recursively? [Y/n] " choice
 if [ "$choice" = "y" ] || [ "$choice" = "Y" ]; then 
